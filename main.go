@@ -1,53 +1,61 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"image/color"
 )
 
-type myTheme struct {
-}
+//go:embed Noto_Sans_SC/NotoSansSC-Regular.otf
+var resourceNotoSansSCRegularOtf []byte
 
-func (m myTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant) color.Color {
-	//TODO implement me
-	return theme.LightTheme().Color(name, variant) // 使用默认主题颜色
-	//panic("implement me")
-}
-
-func (m myTheme) Font(style fyne.TextStyle) fyne.Resource {
-	//TODO implement me
-	if style.Monospace {
-		return theme.DefaultTheme().Font(style) // 使用默认字体
-	}
-	customFont, err := fyne.LoadResourceFromPath("../../字体/Noto_Sans_SC")
-	if err != nil {
-		return theme.DefaultTheme().Font(style) // 加载失败时使用默认字体
-	}
-
-	return customFont
-}
-
-func (m myTheme) Icon(name fyne.ThemeIconName) fyne.Resource {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (m myTheme) Size(name fyne.ThemeSizeName) float32 {
-	//TODO implement me
-	panic("implement me")
-}
+type myTheme struct{}
 
 var _ fyne.Theme = (*myTheme)(nil)
 
+func (m myTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant) color.Color {
+	return theme.DefaultTheme().Color(name, variant)
+}
+
+func (m myTheme) Font(_ fyne.TextStyle) fyne.Resource {
+	return &fyne.StaticResource{
+		StaticName:    "NotoSansSC-Regular.otf",
+		StaticContent: resourceNotoSansSCRegularOtf,
+	}
+}
+
+func (m myTheme) Icon(name fyne.ThemeIconName) fyne.Resource {
+	return theme.DefaultTheme().Icon(name)
+}
+
+func (m myTheme) Size(name fyne.ThemeSizeName) float32 {
+	return theme.DefaultTheme().Size(name)
+}
+
 func main() {
 	myApp := app.New()
-	myApp.Settings().SetTheme(theme.LightTheme())
+	myApp.Settings().SetTheme(&myTheme{})
 	myWindow := myApp.NewWindow("闺闺模拟器")
 	myWindow.Resize(fyne.NewSize(400, 400))
+	outputLabel := widget.NewLabel("")
+
+	submitButton := widget.NewButton("输入闺闺名字", func() {
+		simulator(outputLabel)
+	})
+
+	content := container.NewVBox(
+		submitButton,
+		outputLabel,
+	)
+
+	myWindow.SetContent(content)
+	myWindow.ShowAndRun()
+
 }
 
 func simulator(output *widget.Label) {
