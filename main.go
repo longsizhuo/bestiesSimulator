@@ -11,7 +11,7 @@ import (
 	"image/color"
 )
 
-//go:embed Noto_Sans_SC/NotoSansSC-Regular.otf
+//go:embed Noto_Sans_SC/HarmonyOS_Sans_SC_Regular.ttf
 var resourceNotoSansSCRegularOtf []byte
 
 type myTheme struct{}
