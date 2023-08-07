@@ -12,8 +12,8 @@ import (
 	"image/color"
 )
 
-//go:embed Noto_Sans_SC/HarmonyOS_Sans_SC_Regular.ttf
-var resourceNotoSansSCRegularOtf []byte
+//go:embed Source/HarmonyOS_Sans_SC_Regular.ttf
+var customFont []byte
 
 type myTheme struct{}
 
@@ -25,8 +25,8 @@ func (m myTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant) colo
 
 func (m myTheme) Font(_ fyne.TextStyle) fyne.Resource {
 	return &fyne.StaticResource{
-		StaticName:    "NotoSansSC-Regular.otf",
-		StaticContent: resourceNotoSansSCRegularOtf,
+		StaticName:    "newFont",
+		StaticContent: customFont,
 	}
 }
 
