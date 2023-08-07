@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"image/color"
@@ -42,15 +43,41 @@ func main() {
 	myApp.Settings().SetTheme(&myTheme{})
 	myWindow := myApp.NewWindow("闺闺模拟器")
 	myWindow.Resize(fyne.NewSize(400, 400))
-	outputLabel := widget.NewLabel("")
+	outputLabel := widget.NewLabel("\n")
 
-	submitButton := widget.NewButton("输入闺闺名字", func() {
-		simulator(outputLabel)
+	nameLabel := widget.NewLabel("闺闺名字")
+	entry := widget.NewEntry()
+	entry.SetPlaceHolder("输入闺闺名字")
+
+	content := container.NewVBox(entry)
+	name := entry.Text
+	confirmCallback := func(response bool) {
+		if response {
+			name = entry.Text
+			nameLabel.SetText("闺闺名字: " + name)
+		}
+	}
+
+	dialog.ShowCustomConfirm("输入闺闺名字", "确认", "取消", content, confirmCallback, myWindow)
+
+	submitButton := widget.NewButton("闺闺伤我心了", func() {
+		beBlack(outputLabel, name)
+	})
+	submitButton2 := widget.NewButton("闺闺回来了", func() {
+		beWhite(outputLabel, name)
 	})
 
-	content := container.NewVBox(
+	resetButton := widget.NewButton("重新开始", func() {
+		entry.SetText("")         // 清空输入框
+		nameLabel.SetText("闺闺名字") // 清空输出标签
+	})
+
+	content = container.NewVBox(
+		nameLabel,
 		submitButton,
+		submitButton2,
 		outputLabel,
+		resetButton,
 	)
 
 	myWindow.SetContent(content)
@@ -58,9 +85,20 @@ func main() {
 
 }
 
-func simulator(output *widget.Label) {
-	for i := 10; i > 0; i-- {
-		text := fmt.Sprintf("爱你%%%d\n", i*10)
-		output.SetText(output.Text + text)
+func updateLoveMessage(output *widget.Label, start int, end int, step int, finalMessage string, name string) {
+	var text string
+	for i := start; i != end; i -= step {
+		text += fmt.Sprintf("爱%s%%%d\n\n", name, i*10)
+		output.Text += text
 	}
+	text += finalMessage
+	output.SetText(text)
+}
+
+func beBlack(output *widget.Label, name string) {
+	updateLoveMessage(output, 10, -1, 1, "能量不够，马上关机", name)
+}
+
+func beWhite(output *widget.Label, name string) {
+	updateLoveMessage(output, 0, 11, -1, "你的闺闺回来了", name)
 }
